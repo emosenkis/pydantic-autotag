@@ -19,6 +19,7 @@ jobs:
         uses: astral-sh/setup-uv@v5
         with:
           python-version: ${{ matrix.python-version }}
+          enable-cache: false
 
       - name: Install deps
         run: uv sync --no-install-project
@@ -35,6 +36,8 @@ jobs:
 
       - name: Install uv
         uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: false
 
       - name: Install deps
         run: uv sync --no-install-project
