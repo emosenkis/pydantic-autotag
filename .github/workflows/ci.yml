@@ -27,6 +27,36 @@ jobs:
       - name: Run tests
         run: uv run -m doctest -v src/pydantic_autotag/__init__.py
 
+  coverage:
+    name: coverage
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv and set the python version
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: false
+
+      - name: Run tests with coverage
+        run: uv run coverage run --branch -m doctest src/pydantic_autotag/__init__.py
+
+      - name: Report coverage
+        run: |-
+          uv run coverage html
+          uv run coverage report --format=markdown >> $GITHUB_STEP_SUMMARY
+          # We can't hit 100% because of the overloads of the `autotag` decorator function.
+          uv run coverage report --fail-under=97
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: htmlcov
+        if: failure()
+
   lint:
     name: lint
     runs-on: ubuntu-latest

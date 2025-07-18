@@ -13,15 +13,8 @@ from typing import (
     overload,
 )
 
-from pydantic import BaseModel, Discriminator, Tag, computed_field
+from pydantic import BaseModel, Discriminator, Tag
 from pydantic.fields import FieldInfo
-
-
-class AutotaggableModel(BaseModel):
-    @computed_field(repr=False)  # type: ignore[prop-decorator]
-    @property
-    def type(self) -> str:
-        return type(self).__name__
 
 
 Tagger: TypeAlias = Callable[[type[BaseModel]], str]
@@ -112,6 +105,7 @@ def autotag(
     ...
     AssertionError: Expected E.type to be annotated `typing.Literal['E']` or `str` but got `<class 'int'>`
 
+    >>> from pydantic import computed_field
     >>> @autotag
     ... class F(BaseModel):
     ...     @computed_field
@@ -137,6 +131,17 @@ def autotag(
     'tag_H'
     >>> H().model_dump()
     {'type': 'tag_H'}
+
+    >>> @autotag(tag_value="constant")
+    ... class I(BaseModel): ...
+    >>> I().type
+    'constant'
+
+    >>> @autotag
+    ... class J(BaseModel):
+    ...     type: Literal["J"] = "J"
+    >>> J().type
+    'J'
 
     >>> import re
     >>> @autotag(field_name="camel")
