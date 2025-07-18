@@ -4,8 +4,7 @@ A lightweight Python library that simplifies working with tagged unions in
 Pydantic by automatically adding discriminator fields to your models and
 annotating union types. Using discriminators makes deserializing union types
 dramatically faster since it only has to deserialize the value as the correct
-type without trying all the other possible types. It also prevents any issues
-arising if one value
+type without trying all the other possible types.
 
 ## Installation
 
