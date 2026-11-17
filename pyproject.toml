@@ -1,6 +1,6 @@
 [project]
 name = "pydantic-autotag"
-version = "1.0.0"
+version = "1.0.1"
 description = "Create Pydantic tagged unions without the boilerplate"
 readme = "README.md"
 authors = [{ name = "Eitan Mosenkis", email = "eitan@mosenkis.net" }]

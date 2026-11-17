@@ -1,8 +1,8 @@
 import functools
+from collections.abc import Callable
 from types import UnionType
 from typing import (
     Annotated,
-    Callable,
     Literal,
     TypeAlias,
     TypeVar,
@@ -15,7 +15,6 @@ from typing import (
 
 from pydantic import BaseModel, Discriminator, Tag
 from pydantic.fields import FieldInfo
-
 
 Tagger: TypeAlias = Callable[[type[BaseModel]], str]
 
@@ -85,7 +84,7 @@ def autotag(
     C()
     >>> C().type
     'C'
-    >>> C().__annotations__["type"]
+    >>> C.__annotations__["type"]
     typing.Literal['C']
     >>> C.model_fields["type"].annotation
     typing.Literal['C']
@@ -241,9 +240,8 @@ def autotagged_union(
         f"Expected a Union or UnionType, got {union}"
     )
     types = get_args(union)
-    annotated_union = Union.__getitem__(
-        tuple(Annotated[t, Tag(tag_value(t))] for t in types)
-    )
+    tagged_types = tuple(Annotated[t, Tag(tag_value(t))] for t in types)
+    annotated_union: object = Union[tagged_types]  # noqa: UP007
     for t in types:
         assert issubclass(t, BaseModel)
         autotag(t, field_name=field_name, tag_value=tag_value)
